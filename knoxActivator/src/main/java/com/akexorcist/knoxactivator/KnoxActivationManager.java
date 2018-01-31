@@ -10,9 +10,12 @@ import android.content.Intent;
 import android.os.Handler;
 
 import com.akexorcist.knoxactivator.event.AdminDeactivatedEvent;
+import com.akexorcist.knoxactivator.event.KnoxLicenseActivatedEvent;
+import com.akexorcist.knoxactivator.event.KnoxLicenseActivationFailedEvent;
 import com.akexorcist.knoxactivator.event.LicenseActivatedEvent;
 import com.akexorcist.knoxactivator.event.LicenseActivationFailedEvent;
 import com.akexorcist.knoxactivator.receiver.AdminActivationReceiver;
+import com.sec.enterprise.knox.license.KnoxEnterpriseLicenseManager;
 import com.squareup.otto.Subscribe;
 
 /**
@@ -57,6 +60,21 @@ public class KnoxActivationManager {
     }
 
     @Subscribe
+    public void onKnoxLicenseActivated(KnoxLicenseActivatedEvent event) {
+        if (activationCallback != null) {
+            activationCallback.onKnoxLicenseActivated();
+        }
+    }
+
+    @Subscribe
+    public void onKnoxLicenseActivationFailed(KnoxLicenseActivationFailedEvent event) {
+        if (activationCallback != null) {
+            int errorType = event.getErrorType();
+            activationCallback.onKnoxLicenseActivateFailed(errorType, getErrorMessage(errorType));
+        }
+    }
+
+    @Subscribe
     public void onLicenseActivated(LicenseActivatedEvent event) {
         if (activationCallback != null) {
             activationCallback.onLicenseActivated();
@@ -91,6 +109,11 @@ public class KnoxActivationManager {
     public boolean isMdmApiSupported(Context context, EnterpriseDeviceManager.EnterpriseSdkVersion requiredVersion) {
         EnterpriseDeviceManager enterpriseDeviceManager = (EnterpriseDeviceManager) context.getSystemService(EnterpriseDeviceManager.ENTERPRISE_POLICY_SERVICE);
         return !(requiredVersion != null && enterpriseDeviceManager.getEnterpriseSdkVer().ordinal() < requiredVersion.ordinal());
+    }
+
+    public void activateKnoxLicense(Context context, String licenseKey) {
+        KnoxEnterpriseLicenseManager knoxLicenseManager = KnoxEnterpriseLicenseManager.getInstance(context);
+        knoxLicenseManager.activateLicense(licenseKey, context.getPackageName());
     }
 
     public void activateLicense(Context context, String licenseKey) {

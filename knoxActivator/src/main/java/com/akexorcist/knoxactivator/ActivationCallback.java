@@ -10,6 +10,10 @@ public interface ActivationCallback {
 
     void onDeviceAdminDeactivated();
 
+    void onKnoxLicenseActivated();
+
+    void onKnoxLicenseActivateFailed(int errorType, String errorMessage);
+
     void onLicenseActivated();
 
     void onLicenseActivateFailed(int errorType, String errorMessage);

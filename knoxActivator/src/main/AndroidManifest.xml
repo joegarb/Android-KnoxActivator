@@ -21,6 +21,7 @@
         <receiver android:name=".receiver.LicenseActivationReceiver">
             <intent-filter>
                 <action android:name="edm.intent.action.license.status" />
+                <action android:name="edm.intent.action.knox_license.status" />
             </intent-filter>
         </receiver>
 

@@ -30,8 +30,11 @@ import android.content.Intent;
 import android.os.Handler;
 
 import com.akexorcist.knoxactivator.KnoxActivationBus;
+import com.akexorcist.knoxactivator.event.KnoxLicenseActivatedEvent;
+import com.akexorcist.knoxactivator.event.KnoxLicenseActivationFailedEvent;
 import com.akexorcist.knoxactivator.event.LicenseActivatedEvent;
 import com.akexorcist.knoxactivator.event.LicenseActivationFailedEvent;
+import com.sec.enterprise.knox.license.KnoxEnterpriseLicenseManager;
 
 public class LicenseActivationReceiver extends BroadcastReceiver {
     private static final long EVENT_LISTENER_DELAY = 500;
@@ -50,8 +53,33 @@ public class LicenseActivationReceiver extends BroadcastReceiver {
                 } else {
                     onLicenseActivationFailed(errorCode);
                 }
+            } else if (action != null && action.equals(KnoxEnterpriseLicenseManager.ACTION_LICENSE_STATUS)) {
+                int errorCode = intent.getIntExtra(KnoxEnterpriseLicenseManager.EXTRA_LICENSE_ERROR_CODE, KnoxEnterpriseLicenseManager.ERROR_UNKNOWN);
+                if (errorCode == KnoxEnterpriseLicenseManager.ERROR_NONE) {
+                    onKnoxLicenseActivated();
+                } else {
+                    onKnoxLicenseActivationFailed(errorCode);
+                }
             }
         }
+    }
+
+    private void onKnoxLicenseActivated() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                KnoxActivationBus.getInstance().getBus().post(new KnoxLicenseActivatedEvent());
+            }
+        }, EVENT_LISTENER_DELAY);
+    }
+
+    private void onKnoxLicenseActivationFailed(final int errorCode) {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                KnoxActivationBus.getInstance().getBus().post(new KnoxLicenseActivationFailedEvent(errorCode));
+            }
+        }, EVENT_LISTENER_DELAY);
     }
 
     private void onLicenseActivated() {
