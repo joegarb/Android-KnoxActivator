@@ -14,6 +14,8 @@ import com.akexorcist.knoxactivator.sample.manager.ToastManager;
 public class ActivationActivity extends AppCompatActivity {
     // TODO Put your ELM key here
     private final String LICENSE_KEY = "YOUR_ELM_KEY";
+    // TODO Put your KLM key here
+    private final String KLM_LICENSE_KEY = "YOUR_KLM_KEY";
 
     private Dialog dialogLoading;
 
@@ -62,17 +64,31 @@ public class ActivationActivity extends AppCompatActivity {
         }
 
         @Override
+        public void onKnoxLicenseActivated() {
+            hideLoadingDialog();
+            saveKLMLicenseActivationStateToSharedPreference();
+            showKLMLicenseActivationSuccess();
+            activateELMLicense();
+        }
+
+        @Override
+        public void onKnoxLicenseActivateFailed(int errorType, String errorMessage) {
+            hideLoadingDialog();
+            showKLMLicenseActivationProblem(errorType, errorMessage);
+        }
+
+        @Override
         public void onLicenseActivated() {
             hideLoadingDialog();
-            saveLicenseActivationStateToSharedPreference();
-            showLicenseActivationSuccess();
+            saveELMLicenseActivationStateToSharedPreference();
+            showELMLicenseActivationSuccess();
             goToDoSomethingActivity();
         }
 
         @Override
         public void onLicenseActivateFailed(int errorType, String errorMessage) {
             hideLoadingDialog();
-            showLicenseActivationProblem(errorType, errorMessage);
+            showELMLicenseActivationProblem(errorType, errorMessage);
         }
     };
 
@@ -92,23 +108,37 @@ public class ActivationActivity extends AppCompatActivity {
         }
     }
 
-    private void activateKnoxLicense() {
-        if (SharedPreferenceManager.isLicenseActivated(this)) {
-            showLicenseActivationSuccess();
+    private void activateKLMLicense() {
+        if (SharedPreferenceManager.isKLMLicenseActivated(this)) {
+            showKLMLicenseActivationSuccess();
+            activateELMLicense();
+        } else {
+            showKLMLoadingDialog();
+            KnoxActivationManager.getInstance().activateKnoxLicense(this, KLM_LICENSE_KEY);
+        }
+    }
+
+    private void activateELMLicense() {
+        if (SharedPreferenceManager.isELMLicenseActivated(this)) {
+            showELMLicenseActivationSuccess();
             goToDoSomethingActivity();
         } else {
-            showLoadingDialog();
+            showELMLoadingDialog();
             KnoxActivationManager.getInstance().activateLicense(this, LICENSE_KEY);
         }
     }
 
     private void setDeviceAdminActivated() {
         showDeviceAdminActivationSuccess();
-        activateKnoxLicense();
+        activateKLMLicense();
     }
 
-    private void saveLicenseActivationStateToSharedPreference() {
-        SharedPreferenceManager.setLicenseActivated(this);
+    private void saveKLMLicenseActivationStateToSharedPreference() {
+        SharedPreferenceManager.setKLMLicenseActivated(this);
+    }
+
+    private void saveELMLicenseActivationStateToSharedPreference() {
+        SharedPreferenceManager.setELMLicenseActivated(this);
     }
 
     private void goToDoSomethingActivity() {
@@ -116,8 +146,12 @@ public class ActivationActivity extends AppCompatActivity {
         finish();
     }
 
-    private void showLicenseActivationSuccess() {
-        ToastManager.showLicenseActivationSuccess(this);
+    private void showKLMLicenseActivationSuccess() {
+        ToastManager.showKLMLicenseActivationSuccess(this);
+    }
+
+    private void showELMLicenseActivationSuccess() {
+        ToastManager.showELMLicenseActivationSuccess(this);
     }
 
     private void showDeviceAdminActivationSuccess() {
@@ -147,11 +181,25 @@ public class ActivationActivity extends AppCompatActivity {
         });
     }
 
-    private void showLicenseActivationProblem(int errorType, String errorMessage) {
-        DialogManager.showLicenseActivationProblem(this, errorType, errorMessage, new DialogManager.OnDialogClickAdapter() {
+    private void showKLMLicenseActivationProblem(int errorType, String errorMessage) {
+        DialogManager.showKLMLicenseActivationProblem(this, errorType, errorMessage, new DialogManager.OnDialogClickAdapter() {
             @Override
             public void onPositiveClick() {
-                activateKnoxLicense();
+                activateKLMLicense();
+            }
+
+            @Override
+            public void onNegativeClick() {
+                activateELMLicense();
+            }
+        });
+    }
+
+    private void showELMLicenseActivationProblem(int errorType, String errorMessage) {
+        DialogManager.showELMLicenseActivationProblem(this, errorType, errorMessage, new DialogManager.OnDialogClickAdapter() {
+            @Override
+            public void onPositiveClick() {
+                activateELMLicense();
             }
 
             @Override
@@ -161,8 +209,12 @@ public class ActivationActivity extends AppCompatActivity {
         });
     }
 
-    private void showLoadingDialog() {
-        dialogLoading = DialogManager.showLicenseActivationLoading(this);
+    private void showKLMLoadingDialog() {
+        dialogLoading = DialogManager.showKLMLicenseActivationLoading(this);
+    }
+
+    private void showELMLoadingDialog() {
+        dialogLoading = DialogManager.showELMLicenseActivationLoading(this);
     }
 
     private void hideLoadingDialog() {

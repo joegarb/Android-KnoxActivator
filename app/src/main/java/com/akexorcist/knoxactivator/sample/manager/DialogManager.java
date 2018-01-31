@@ -12,9 +12,17 @@ import com.yarolegovich.lovelydialog.LovelyStandardDialog;
  * Created by Akexorcist on 4/22/2016 AD.
  */
 public class DialogManager {
-    public static Dialog showLicenseActivationLoading(Context context) {
+    public static Dialog showKLMLicenseActivationLoading(Context context) {
         return new LovelyProgressDialog(context)
-                .setTitle(R.string.license_activation_loading_title)
+            .setTitle(R.string.klm_license_activation_loading_title)
+            .setMessage(R.string.license_activation_loading_content)
+            .setTopColorRes(R.color.primary)
+            .show();
+    }
+
+    public static Dialog showELMLicenseActivationLoading(Context context) {
+        return new LovelyProgressDialog(context)
+                .setTitle(R.string.elm_license_activation_loading_title)
                 .setMessage(R.string.license_activation_loading_content)
                 .setTopColorRes(R.color.primary)
                 .show();
@@ -72,10 +80,19 @@ public class DialogManager {
                 listener);
     }
 
-    public static void showLicenseActivationProblem(Context context, int errorType, String errorMessage, OnDialogClickListener listener) {
+    public static void showKLMLicenseActivationProblem(Context context, int errorType, String errorMessage, OnDialogClickListener listener) {
         showDialog(context,
-                context.getString(R.string.license_failed_title),
-                context.getString(R.string.license_failed_content, errorMessage, errorType),
+            context.getString(R.string.klm_license_failed_title),
+            context.getString(R.string.klm_license_failed_content, errorMessage, errorType),
+            context.getString(R.string.retry),
+            context.getString(R.string.cancel),
+            listener);
+    }
+
+    public static void showELMLicenseActivationProblem(Context context, int errorType, String errorMessage, OnDialogClickListener listener) {
+        showDialog(context,
+                context.getString(R.string.elm_license_failed_title),
+                context.getString(R.string.elm_license_failed_content, errorMessage, errorType),
                 context.getString(R.string.retry),
                 context.getString(R.string.cancel),
                 listener);

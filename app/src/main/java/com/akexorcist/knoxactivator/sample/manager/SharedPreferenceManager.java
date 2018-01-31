@@ -7,17 +7,30 @@ import android.content.Context;
  */
 public class SharedPreferenceManager {
     private static final String PREFERENCE_STATE = "preference_state";
-    private static final String KEY_LICENSE_ACTIVATED = "key_license_activated";
+    private static final String KLM_LICENSE_ACTIVATED = "klm_license_activated";
+    private static final String ELM_LICENSE_ACTIVATED = "key_license_activated";
 
-    public static void setLicenseActivated(Context context) {
+    public static void setKLMLicenseActivated(Context context) {
+        context.getSharedPreferences(PREFERENCE_STATE, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean(KLM_LICENSE_ACTIVATED, true)
+            .apply();
+    }
+
+    public static boolean isKLMLicenseActivated(Context context) {
+        return context.getSharedPreferences(PREFERENCE_STATE, Context.MODE_PRIVATE)
+            .getBoolean(KLM_LICENSE_ACTIVATED, false);
+    }
+
+    public static void setELMLicenseActivated(Context context) {
         context.getSharedPreferences(PREFERENCE_STATE, Context.MODE_PRIVATE)
                 .edit()
-                .putBoolean(KEY_LICENSE_ACTIVATED, true)
+                .putBoolean(ELM_LICENSE_ACTIVATED, true)
                 .apply();
     }
 
-    public static boolean isLicenseActivated(Context context) {
+    public static boolean isELMLicenseActivated(Context context) {
         return context.getSharedPreferences(PREFERENCE_STATE, Context.MODE_PRIVATE)
-                .getBoolean(KEY_LICENSE_ACTIVATED, false);
+                .getBoolean(ELM_LICENSE_ACTIVATED, false);
     }
 }

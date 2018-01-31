@@ -10,8 +10,12 @@ import com.akexorcist.knoxactivator.sample.R;
  * Created by Akexorcist on 4/22/2016 AD.
  */
 public class ToastManager {
-    public static void showLicenseActivationSuccess(Context context) {
-        showToast(context, R.string.license_activation_success);
+    public static void showKLMLicenseActivationSuccess(Context context) {
+        showToast(context, R.string.klm_license_activation_success);
+    }
+
+    public static void showELMLicenseActivationSuccess(Context context) {
+        showToast(context, R.string.elm_license_activation_success);
     }
 
     public static void showDeviceAdminActivationSuccess(Context context) {
